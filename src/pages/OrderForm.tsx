@@ -82,9 +82,11 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '12px',
   borderRadius: '10px',
-  border: '1px solid #ddd',
+  border: '1px solid var(--tg-theme-hint-color, #ddd)',
   fontSize: '16px',
   outline: 'none',
+  background: 'var(--tg-theme-secondary-bg-color, #f1f1f1)',
+  color: 'var(--tg-theme-text-color, #000000)',
 }
 
 const buttonStyle: React.CSSProperties = {
