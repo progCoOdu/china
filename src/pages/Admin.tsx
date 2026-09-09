@@ -49,7 +49,7 @@ export default function Admin() {
   if (loading) return <div style={{ padding: '24px', background: '#F5F0E8', minHeight: '100vh' }}>Загружаем...</div>
   if (!allowed) return <div style={{ padding: '24px', background: '#F5F0E8', minHeight: '100vh' }}>⛔ Доступ запрещён</div>
 
-  return (
+    return (
     <div style={{ padding: '24px 20px', minHeight: '100vh', background: '#F5F0E8' }}>
       <p style={{ fontSize: '14px', color: '#8A7F6E', marginBottom: '4px' }}>co.odu</p>
       <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '28px' }}>Админ панель</h1>
@@ -63,4 +63,69 @@ export default function Admin() {
               {order.tg_first_name ?? 'Аноним'} {order.tg_username ? `@${order.tg_username}` : ''}
             </span>
             <span style={{ fontSize: '13px', color: '#8A7F6E' }}>
-              {new
+              {new Date(order.created_at).toLocaleDateString('ru-RU')}
+            </span>
+          </div>
+
+          <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>
+            Товаров: {order.order_items?.length ?? 0}
+          </p>
+
+          {order.order_items?.map(item => (
+            <div key={item.id} style={itemStyle}>
+              <a href={item.link} target="_blank" rel="noreferrer" style={{ color: '#1A1A1A', fontSize: '13px', wordBreak: 'break-all' }}>
+                {item.link.length > 35 ? item.link.slice(0, 35) + '...' : item.link}
+              </a>
+              <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
+                {item.product_type} · {item.color} · {item.size}
+              </p>
+              <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '2px' }}>
+                {item.price_cny} ¥ · {item.weight_kg} кг
+              </p>
+            </div>
+          ))}
+
+          <div style={{ marginTop: '12px' }}>
+            <p style={{ fontSize: '12px', color: '#8A7F6E', marginBottom: '8px' }}>Статус:</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {Object.entries(statusLabel).map(([s, label]) => (
+                <button
+                  key={s}
+                  onClick={() => updateStatus(order.id, s)}
+                  style={{
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    background: order.status === s ? '#1A1A1A' : '#F5F0E8',
+                    color: order.status === s ? '#F5F0E8' : '#1A1A1A',
+                    fontWeight: order.status === s ? 600 : 400,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const cardStyle: React.CSSProperties = {
+  padding: '16px',
+  borderRadius: '14px',
+  background: '#EDE5D0',
+  marginBottom: '12px',
+  border: '1px solid #D4C9B0',
+}
+
+const itemStyle: React.CSSProperties = {
+  padding: '10px',
+  borderRadius: '10px',
+  background: '#F5F0E8',
+  marginBottom: '8px',
+  border: '1px solid #D4C9B0',
+}
