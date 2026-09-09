@@ -33,33 +33,41 @@ export default function MyOrders() {
     done: '✅ Готово',
   }
 
+  const statusColor: Record<string, string> = {
+    new: '#8A7F6E',
+    in_progress: '#C8A96E',
+    done: '#5A7A5A',
+  }
+
   return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-        <button onClick={() => navigate('/')} style={backButtonStyle}>← Назад</button>
-        <h1>Мои заявки</h1>
+    <div style={{ padding: '24px', minHeight: '100vh', background: '#F5F0E8' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
+        <button onClick={() => navigate('/')} style={backButtonStyle}>←</button>
+        <div>
+          <h1 style={{ fontSize: '22px', fontWeight: 700 }}>Мои заявки</h1>
+        </div>
       </div>
 
-      {loading && <p>Загружаем...</p>}
+      {loading && <p style={{ color: '#8A7F6E' }}>Загружаем...</p>}
 
       {!loading && orders.length === 0 && (
-        <p style={{ opacity: 0.6 }}>Заявок пока нет</p>
+        <p style={{ color: '#8A7F6E' }}>Заявок пока нет</p>
       )}
 
       {orders.map(order => (
         <div key={order.id} style={cardStyle}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', opacity: 0.5 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+            <span style={{ fontSize: '13px', color: '#8A7F6E' }}>
               {new Date(order.created_at).toLocaleDateString('ru-RU')}
             </span>
-            <span style={{ fontSize: '13px', fontWeight: 600 }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: statusColor[order.status] ?? '#8A7F6E' }}>
               {statusLabel[order.status] ?? order.status}
             </span>
           </div>
-          <a href={order.link} target="_blank" rel="noreferrer" style={{ color: '#2563eb', wordBreak: 'break-all' }}>
+          <a href={order.link} target="_blank" rel="noreferrer" style={{ color: '#1A1A1A', wordBreak: 'break-all', fontSize: '14px' }}>
             {order.link}
           </a>
-          <p style={{ marginTop: '8px', opacity: 0.8 }}>{order.description}</p>
+          <p style={{ marginTop: '8px', color: '#3A3A3A', fontSize: '14px' }}>{order.description}</p>
         </div>
       ))}
     </div>
@@ -67,16 +75,22 @@ export default function MyOrders() {
 }
 
 const backButtonStyle: React.CSSProperties = {
-  background: 'none',
+  background: '#EDE5D0',
   border: 'none',
-  fontSize: '16px',
+  fontSize: '18px',
   cursor: 'pointer',
-  padding: 0,
+  width: '36px',
+  height: '36px',
+  borderRadius: '10px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }
 
 const cardStyle: React.CSSProperties = {
   padding: '16px',
-  borderRadius: '12px',
-  border: '1px solid #e5e7eb',
+  borderRadius: '14px',
+  background: '#EDE5D0',
   marginBottom: '12px',
+  border: '1px solid #D4C9B0',
 }
