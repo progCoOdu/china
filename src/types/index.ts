@@ -5,7 +5,13 @@ export interface Order {
   tg_first_name: string | null
   link: string
   description: string
-  status: 'new' | 'in_progress' | 'done'
+  product_type: string | null
+  color: string | null
+  size: string | null
+  price_cny: number | null
+  weight_kg: number | null
+  weight_kg_actual: number | null
+  status: string
   created_at: string
 }
 
