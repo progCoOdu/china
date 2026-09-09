@@ -3,7 +3,7 @@ import { supabase } from '../utils/supabase'
 import { getTelegramUser } from '../utils/telegram'
 import { Order } from '../types'
 
-const ADMIN_TG_ID = 'ВАШ_TELEGRAM_ID' // сюда вставим твой ID
+const ADMIN_TG_ID = '7675680438' // сюда вставим твой ID
 
 export default function Admin() {
   const [orders, setOrders] = useState<Order[]>([])
