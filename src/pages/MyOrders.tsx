@@ -16,7 +16,7 @@ export default function MyOrders() {
 
       const { data } = await supabase
         .from('orders')
-        .select('*')
+        .select('*, order_items(*)')
         .eq('tg_user_id', tg_user_id)
         .order('created_at', { ascending: false })
 
@@ -28,24 +28,22 @@ export default function MyOrders() {
   }, [])
 
   const statusLabel: Record<string, string> = {
-    new: '🆕 Новая',
-    in_progress: '⚙️ В работе',
-    done: '✅ Готово',
-  }
-
-  const statusColor: Record<string, string> = {
-    new: '#8A7F6E',
-    in_progress: '#C8A96E',
-    done: '#5A7A5A',
+    new: '🆕 Новый',
+    accepted: '✅ Принят',
+    declined: '❌ Отклонён',
+    ordered: '🛒 Заказан',
+    warehouse: '📦 На складе',
+    transit_msk: '🚚 В пути MSK',
+    transit_msq: '🚚 В пути MSQ',
+    arrived: '🏁 Прибыл',
+    ready: '🎉 Готов к выдаче',
   }
 
   return (
-    <div style={{ padding: '24px', minHeight: '100vh', background: '#F5F0E8' }}>
+    <div style={{ padding: '24px 20px', minHeight: '100vh', background: '#F5F0E8' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
         <button onClick={() => navigate('/')} style={backButtonStyle}>←</button>
-        <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700 }}>Мои заявки</h1>
-        </div>
+        <h1 style={{ fontSize: '22px', fontWeight: 700 }}>Мои заявки</h1>
       </div>
 
       {loading && <p style={{ color: '#8A7F6E' }}>Загружаем...</p>}
@@ -60,14 +58,23 @@ export default function MyOrders() {
             <span style={{ fontSize: '13px', color: '#8A7F6E' }}>
               {new Date(order.created_at).toLocaleDateString('ru-RU')}
             </span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: statusColor[order.status] ?? '#8A7F6E' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600 }}>
               {statusLabel[order.status] ?? order.status}
             </span>
           </div>
-          <a href={order.link} target="_blank" rel="noreferrer" style={{ color: '#1A1A1A', wordBreak: 'break-all', fontSize: '14px' }}>
-            {order.link}
-          </a>
-          <p style={{ marginTop: '8px', color: '#3A3A3A', fontSize: '14px' }}>{order.description}</p>
+          <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '8px' }}>
+            Товаров: {order.order_items?.length ?? 0}
+          </p>
+          {order.order_items?.map(item => (
+            <div key={item.id} style={itemStyle}>
+              <a href={item.link} target="_blank" rel="noreferrer" style={{ color: '#1A1A1A', fontSize: '13px', wordBreak: 'break-all' }}>
+                {item.link.length > 35 ? item.link.slice(0, 35) + '...' : item.link}
+              </a>
+              <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
+                {item.price_cny} ¥ · {item.weight_kg} кг
+              </p>
+            </div>
+          ))}
         </div>
       ))}
     </div>
@@ -82,9 +89,6 @@ const backButtonStyle: React.CSSProperties = {
   width: '36px',
   height: '36px',
   borderRadius: '10px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 }
 
 const cardStyle: React.CSSProperties = {
@@ -92,5 +96,13 @@ const cardStyle: React.CSSProperties = {
   borderRadius: '14px',
   background: '#EDE5D0',
   marginBottom: '12px',
+  border: '1px solid #D4C9B0',
+}
+
+const itemStyle: React.CSSProperties = {
+  padding: '10px',
+  borderRadius: '10px',
+  background: '#F5F0E8',
+  marginTop: '8px',
   border: '1px solid #D4C9B0',
 }
