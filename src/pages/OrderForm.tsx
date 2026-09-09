@@ -119,3 +119,106 @@ export default function OrderForm() {
           <label style={labelStyle}>Тип товара</label>
           <input type="text" placeholder="Кроссовки, куртка... или —" value={productType} onChange={e => setProductType(e.target.value)} style={inputStyle} />
         </div>
+
+        <div style={{ marginBottom: '12px' }}>
+          <label style={labelStyle}>Цвет</label>
+          <input type="text" placeholder="Чёрный, белый... или —" value={color} onChange={e => setColor(e.target.value)} style={inputStyle} />
+        </div>
+
+        <div style={{ marginBottom: '12px' }}>
+          <label style={labelStyle}>Размер</label>
+          <input type="text" placeholder="42, XL... или —" value={size} onChange={e => setSize(e.target.value)} style={inputStyle} />
+        </div>
+
+        <div style={{ marginBottom: '12px' }}>
+          <label style={labelStyle}>Сумма в юанях *</label>
+          <input type="number" placeholder="0" value={priceCny} onChange={e => setPriceCny(e.target.value)} style={inputStyle} />
+        </div>
+
+        <div style={{ marginBottom: '16px' }}>
+          <label style={labelStyle}>Примерный вес (кг) *</label>
+          <input type="number" placeholder="0.5" value={weightKg} onChange={e => setWeightKg(e.target.value)} style={inputStyle} />
+        </div>
+
+        {error && <p style={{ color: '#c0392b', marginBottom: '12px', fontSize: '14px' }}>{error}</p>}
+
+        <button onClick={addItem} style={addButtonStyle}>
+          + Добавить в заказ
+        </button>
+      </div>
+
+      <button onClick={handleSubmit} disabled={loading || items.length === 0} style={{
+        ...submitButtonStyle,
+        opacity: items.length === 0 ? 0.5 : 1,
+      }}>
+        {loading ? 'Отправляем...' : `Отправить заказ (${items.length} товар${items.length === 1 ? '' : items.length < 5 ? 'а' : 'ов'})`}
+      </button>
+    </div>
+  )
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  marginBottom: '6px',
+  fontWeight: 600,
+  fontSize: '13px',
+  color: '#1A1A1A',
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '12px',
+  borderRadius: '10px',
+  border: '1px solid #D4C9B0',
+  fontSize: '15px',
+  outline: 'none',
+  background: '#F5F0E8',
+  color: '#1A1A1A',
+  boxSizing: 'border-box',
+}
+
+const addButtonStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '14px',
+  borderRadius: '12px',
+  border: '1px solid #1A1A1A',
+  background: 'transparent',
+  color: '#1A1A1A',
+  fontSize: '15px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  boxSizing: 'border-box',
+}
+
+const submitButtonStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '16px',
+  borderRadius: '12px',
+  border: 'none',
+  background: '#1A1A1A',
+  color: '#F5F0E8',
+  fontSize: '16px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  boxSizing: 'border-box',
+}
+
+const itemCardStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '12px 14px',
+  background: '#EDE5D0',
+  borderRadius: '12px',
+  marginBottom: '8px',
+  border: '1px solid #D4C9B0',
+}
+
+const removeButtonStyle: React.CSSProperties = {
+  background: 'none',
+  border: 'none',
+  fontSize: '16px',
+  cursor: 'pointer',
+  color: '#8A7F6E',
+  padding: '4px',
+}
