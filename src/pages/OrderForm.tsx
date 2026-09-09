@@ -39,7 +39,7 @@ export default function OrderForm() {
   }
 
   return (
-    <div style={{ padding: '24px', minHeight: '100vh', background: '#F5F0E8' }}>
+    <div style={{ padding: '24px 20px', minHeight: '100vh', background: '#F5F0E8' }}>
       <h1 style={{ marginBottom: '4px', fontSize: '28px', fontWeight: 700 }}>co.odu</h1>
       <p style={{ marginBottom: '28px', color: '#8A7F6E', fontSize: '14px' }}>Заказ из Китая</p>
 
@@ -87,6 +87,7 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
   background: '#EDE5D0',
   color: '#1A1A1A',
+  boxSizing: 'border-box',
 }
 
 const buttonStyle: React.CSSProperties = {
@@ -100,6 +101,7 @@ const buttonStyle: React.CSSProperties = {
   fontWeight: 600,
   cursor: 'pointer',
   marginBottom: '12px',
+  boxSizing: 'border-box',
 }
 
 const secondaryButtonStyle: React.CSSProperties = {
@@ -111,4 +113,5 @@ const secondaryButtonStyle: React.CSSProperties = {
   color: '#1A1A1A',
   fontSize: '16px',
   cursor: 'pointer',
+  boxSizing: 'border-box',
 }
