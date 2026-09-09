@@ -39,12 +39,12 @@ export default function OrderForm() {
   }
 
   return (
-    <div style={{ padding: '24px' }}>
-      <h1 style={{ marginBottom: '8px' }}>Заказ из Китая</h1>
-      <p style={{ marginBottom: '24px', opacity: 0.6 }}>Вставь ссылку и опиши что нужно</p>
+    <div style={{ padding: '24px', minHeight: '100vh', background: '#F5F0E8' }}>
+      <h1 style={{ marginBottom: '4px', fontSize: '28px', fontWeight: 700 }}>co.odu</h1>
+      <p style={{ marginBottom: '28px', color: '#8A7F6E', fontSize: '14px' }}>Заказ из Китая</p>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>Ссылка</label>
+        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>Ссылка</label>
         <input
           type="url"
           placeholder="https://..."
@@ -54,8 +54,8 @@ export default function OrderForm() {
         />
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>Описание</label>
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ display: 'block', marginBottom: '6px', fontWeight: 600, fontSize: '14px' }}>Описание</label>
         <textarea
           placeholder="Что заказать, размер, цвет, количество..."
           value={description}
@@ -65,7 +65,7 @@ export default function OrderForm() {
         />
       </div>
 
-      {error && <p style={{ color: 'red', marginBottom: '12px' }}>{error}</p>}
+      {error && <p style={{ color: '#c0392b', marginBottom: '12px', fontSize: '14px' }}>{error}</p>}
 
       <button onClick={handleSubmit} disabled={loading} style={buttonStyle}>
         {loading ? 'Отправляем...' : 'Отправить заявку'}
@@ -80,22 +80,22 @@ export default function OrderForm() {
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
-  padding: '12px',
-  borderRadius: '10px',
-  border: '1px solid var(--tg-theme-hint-color, #ddd)',
+  padding: '14px',
+  borderRadius: '12px',
+  border: '1px solid #D4C9B0',
   fontSize: '16px',
   outline: 'none',
-  background: 'var(--tg-theme-secondary-bg-color, #f1f1f1)',
-  color: 'var(--tg-theme-text-color, #000000)',
+  background: '#EDE5D0',
+  color: '#1A1A1A',
 }
 
 const buttonStyle: React.CSSProperties = {
   width: '100%',
-  padding: '14px',
-  borderRadius: '10px',
+  padding: '16px',
+  borderRadius: '12px',
   border: 'none',
-  background: '#2563eb',
-  color: '#fff',
+  background: '#1A1A1A',
+  color: '#F5F0E8',
   fontSize: '16px',
   fontWeight: 600,
   cursor: 'pointer',
@@ -104,10 +104,11 @@ const buttonStyle: React.CSSProperties = {
 
 const secondaryButtonStyle: React.CSSProperties = {
   width: '100%',
-  padding: '14px',
-  borderRadius: '10px',
-  border: '1px solid #ddd',
+  padding: '16px',
+  borderRadius: '12px',
+  border: '1px solid #1A1A1A',
   background: 'transparent',
+  color: '#1A1A1A',
   fontSize: '16px',
   cursor: 'pointer',
 }
