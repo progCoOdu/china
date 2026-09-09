@@ -82,3 +82,27 @@ export default function Admin() {
                 }}
               >
                 {statusLabel[s]}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+const cardStyle: React.CSSProperties = {
+  padding: '16px',
+  borderRadius: '14px',
+  background: '#EDE5D0',
+  marginBottom: '12px',
+  border: '1px solid #D4C9B0',
+}
+
+const statusButtonStyle: React.CSSProperties = {
+  padding: '8px 12px',
+  borderRadius: '8px',
+  fontSize: '13px',
+  cursor: 'pointer',
+  fontWeight: 500,
+}
