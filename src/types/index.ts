@@ -16,3 +16,8 @@ export interface TelegramUser {
   username?: string
   language_code?: string
 }
+
+export interface Setting {
+  id: string
+  value: number
+}
