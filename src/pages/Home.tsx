@@ -92,5 +92,28 @@ const cardLabelStyle: React.CSSProperties = {
   marginBottom: '8px',
 }
 
+const orderRowStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '10px 14px',
+  background: '#EDE5D0',
+  borderRadius: '10px',
+  marginBottom: '8px',
+  border: '1px solid #D4C9B0',
+}
 
+const buttonStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '16px',
+  borderRadius: '12px',
+  border: 'none',
+  background: '#1A1A1A',
+  color: '#F5F0E8',
+  fontSize: '16px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  marginTop: '8px',
+  boxSizing: 'border-box',
+}
 
