@@ -15,9 +15,9 @@ export default function Home() {
       const tg_user_id = user ? String(user.id) : 'anonymous'
       const { data } = await supabase
         .from('orders')
-        .select('*')
+        .select('*, order_items(*)')
         .eq('tg_user_id', tg_user_id)
-        .in('status', ['new', 'in_progress'])
+        .not('status', 'in', '("declined","ready")')
         .order('created_at', { ascending: false })
       setOrders(data ?? [])
       setLoading(false)
@@ -26,9 +26,15 @@ export default function Home() {
   }, [])
 
   const statusLabel: Record<string, string> = {
-    new: '🆕 Новая',
-    in_progress: '⚙️ В работе',
-    done: '✅ Готово',
+    new: '🆕 Новый',
+    accepted: '✅ Принят',
+    declined: '❌ Отклонён',
+    ordered: '🛒 Заказан',
+    warehouse: '📦 На складе',
+    transit_msk: '🚚 В пути MSK',
+    transit_msq: '🚚 В пути MSQ',
+    arrived: '🏁 Прибыл',
+    ready: '🎉 Готов к выдаче',
   }
 
   return (
@@ -48,11 +54,11 @@ export default function Home() {
           <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>Статусы</p>
           {orders.map(order => (
             <div key={order.id} style={orderRowStyle}>
-              <span style={{ fontSize: '13px', color: '#3A3A3A', flex: 1 }} >
-                {order.link.length > 30 ? order.link.slice(0, 30) + '...' : order.link}
+              <span style={{ fontSize: '13px', color: '#3A3A3A' }}>
+                {order.order_items?.length ?? 0} товар(а) · {new Date(order.created_at).toLocaleDateString('ru-RU')}
               </span>
               <span style={{ fontSize: '12px', color: '#8A7F6E' }}>
-                {statusLabel[order.status]}
+                {statusLabel[order.status] ?? order.status}
               </span>
             </div>
           ))}
@@ -62,7 +68,7 @@ export default function Home() {
       <div style={{ ...cardStyle, background: '#1A1A1A' }}>
         <p style={{ ...cardLabelStyle, color: '#8A8A8A' }}>Долг</p>
         <p style={{ fontSize: '28px', fontWeight: 700, color: '#F5F0E8' }}>—</p>
-        <p style={{ fontSize: '12px', color: '#8A8A8A', marginTop: '4px' }}>Появится в v1.2</p>
+        <p style={{ fontSize: '12px', color: '#8A8A8A', marginTop: '4px' }}>Появится в v1.3</p>
       </div>
 
       <button onClick={() => navigate('/order')} style={buttonStyle}>
@@ -86,27 +92,4 @@ const cardLabelStyle: React.CSSProperties = {
   marginBottom: '8px',
 }
 
-const orderRowStyle: React.CSSProperties = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  padding: '10px 14px',
-  background: '#EDE5D0',
-  borderRadius: '10px',
-  marginBottom: '8px',
-  border: '1px solid #D4C9B0',
-}
-
-const buttonStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '16px',
-  borderRadius: '12px',
-  border: 'none',
-  background: '#1A1A1A',
-  color: '#F5F0E8',
-  fontSize: '16px',
-  fontWeight: 600,
-  cursor: 'pointer',
-  marginTop: '8px',
-  boxSizing: 'border-box',
-}
+const
