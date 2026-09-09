@@ -3,7 +3,7 @@ import { supabase } from '../utils/supabase'
 import { getTelegramUser } from '../utils/telegram'
 import { Order } from '../types'
 
-const ADMIN_TG_ID = '7675680438' // сюда вставим твой ID
+const ADMIN_TG_ID = '7675680438'
 
 export default function Admin() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -41,65 +41,44 @@ export default function Admin() {
     done: '✅ Готово',
   }
 
-  if (loading) return <div style={{ padding: '24px' }}>Загружаем...</div>
+  if (loading) return <div style={{ padding: '24px', background: '#F5F0E8', minHeight: '100vh' }}>Загружаем...</div>
 
-  if (!allowed) return <div style={{ padding: '24px' }}>⛔ Доступ запрещён</div>
+  if (!allowed) return <div style={{ padding: '24px', background: '#F5F0E8', minHeight: '100vh' }}>⛔ Доступ запрещён</div>
 
   return (
-    <div style={{ padding: '24px' }}>
-      <h1 style={{ marginBottom: '24px' }}>Админ панель</h1>
+    <div style={{ padding: '24px', minHeight: '100vh', background: '#F5F0E8' }}>
+      <h1 style={{ marginBottom: '4px', fontSize: '22px', fontWeight: 700 }}>Админ панель</h1>
+      <p style={{ marginBottom: '28px', color: '#8A7F6E', fontSize: '14px' }}>co.odu — заявки из Китая</p>
 
-      {orders.length === 0 && <p style={{ opacity: 0.6 }}>Заявок пока нет</p>}
+      {orders.length === 0 && <p style={{ color: '#8A7F6E' }}>Заявок пока нет</p>}
 
       {orders.map(order => (
         <div key={order.id} style={cardStyle}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontWeight: 600 }}>
+            <span style={{ fontWeight: 600, fontSize: '14px' }}>
               {order.tg_first_name ?? 'Аноним'} {order.tg_username ? `@${order.tg_username}` : ''}
             </span>
-            <span style={{ fontSize: '13px', opacity: 0.5 }}>
+            <span style={{ fontSize: '13px', color: '#8A7F6E' }}>
               {new Date(order.created_at).toLocaleDateString('ru-RU')}
             </span>
           </div>
 
-          <a href={order.link} target="_blank" rel="noreferrer" style={{ color: '#2563eb', wordBreak: 'break-all' }}>
+          <a href={order.link} target="_blank" rel="noreferrer" style={{ color: '#1A1A1A', wordBreak: 'break-all', fontSize: '14px' }}>
             {order.link}
           </a>
 
-          <p style={{ marginTop: '8px', marginBottom: '12px', opacity: 0.8 }}>{order.description}</p>
+          <p style={{ marginTop: '8px', marginBottom: '14px', color: '#3A3A3A', fontSize: '14px' }}>{order.description}</p>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {['new', 'in_progress', 'done'].map(s => (
               <button
                 key={s}
                 onClick={() => updateStatus(order.id, s)}
                 style={{
                   ...statusButtonStyle,
-                  background: order.status === s ? '#2563eb' : '#f3f4f6',
-                  color: order.status === s ? '#fff' : '#000',
+                  background: order.status === s ? '#1A1A1A' : '#F5F0E8',
+                  color: order.status === s ? '#F5F0E8' : '#1A1A1A',
+                  border: `1px solid ${order.status === s ? '#1A1A1A' : '#D4C9B0'}`,
                 }}
               >
                 {statusLabel[s]}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-const cardStyle: React.CSSProperties = {
-  padding: '16px',
-  borderRadius: '12px',
-  border: '1px solid #e5e7eb',
-  marginBottom: '12px',
-}
-
-const statusButtonStyle: React.CSSProperties = {
-  padding: '6px 10px',
-  borderRadius: '8px',
-  border: 'none',
-  fontSize: '13px',
-  cursor: 'pointer',
-}
