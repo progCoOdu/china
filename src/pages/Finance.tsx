@@ -32,17 +32,31 @@ export default function Finance() {
     fetchData()
   }, [])
 
-  const calcOrderTotal = (order: Order) => {
-    if (order.total_byn) return order.total_byn
-    if (!exchangeRate || !deliveryRate) return 0
+  const calcGoods = (order: Order) => {
+    if (!exchangeRate) return 0
     const items = order.order_items ?? []
-    const goodsCost = items.reduce((sum, item) => sum + (item.price_cny ?? 0) * exchangeRate, 0)
-    const deliveryCost = items.reduce((sum, item) => sum + (item.weight_kg ?? 0) * deliveryRate, 0)
-    return goodsCost + deliveryCost
+    return items.reduce((sum, item) => sum + (item.price_cny ?? 0) * exchangeRate, 0)
+  }
+
+  const calcDelivery = (order: Order) => {
+    if (!deliveryRate) return null
+    const items = order.order_items ?? []
+    const hasWeight = items.some(item => item.weight_kg !== null && item.weight_kg !== undefined)
+    if (!hasWeight) return null
+    return items.reduce((sum, item) => sum + (item.weight_kg ?? 0) * deliveryRate, 0)
+  }
+
+  const calcTotal = (order: Order) => {
+    if (order.total_byn) return order.total_byn
+    const goods = calcGoods(order)
+    const delivery = calcDelivery(order)
+    return goods + (delivery ?? 0)
   }
 
   const activeOrders = orders.filter(o => o.status !== 'declined')
-  const totalByn = activeOrders.reduce((sum, o) => sum + calcOrderTotal(o), 0)
+  const totalGoods = activeOrders.reduce((sum, o) => sum + calcGoods(o), 0)
+  const totalDelivery = activeOrders.reduce((sum, o) => sum + (calcDelivery(o) ?? 0), 0)
+  const totalByn = totalGoods + totalDelivery
   const totalPaid = activeOrders.reduce((sum, o) => sum + (o.amount_paid ?? 0), 0)
   const debt = totalByn - totalPaid
 
@@ -65,6 +79,19 @@ export default function Finance() {
 
       {loading ? <p style={{ color: '#8A7F6E' }}>Загружаем...</p> : (
         <>
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
+            <div style={{ ...cardStyle, flex: 1 }}>
+              <p style={labelStyle}>Товары</p>
+              <p style={valueStyle}>{totalGoods.toFixed(2)} BYN</p>
+            </div>
+            <div style={{ ...cardStyle, flex: 1 }}>
+              <p style={labelStyle}>Доставка</p>
+              <p style={valueStyle}>
+                {totalDelivery > 0 ? `${totalDelivery.toFixed(2)} BYN` : '—'}
+              </p>
+            </div>
+          </div>
+
           <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
             <div style={{ ...cardStyle, flex: 1 }}>
               <p style={labelStyle}>Итого</p>
@@ -88,11 +115,11 @@ export default function Finance() {
             <div style={{ display: 'flex', gap: '12px' }}>
               <div style={{ ...cardStyle, flex: 1 }}>
                 <p style={labelStyle}>Курс юань</p>
-                <p style={{ fontSize: '16px', fontWeight: 600 }}>1 ¥ = {exchangeRate} BYN</p>
+                <p style={{ fontSize: '15px', fontWeight: 600 }}>1 ¥ = {exchangeRate} BYN</p>
               </div>
               <div style={{ ...cardStyle, flex: 1 }}>
                 <p style={labelStyle}>Доставка</p>
-                <p style={{ fontSize: '16px', fontWeight: 600 }}>{deliveryRate} BYN/кг</p>
+                <p style={{ fontSize: '15px', fontWeight: 600 }}>{deliveryRate} BYN/кг</p>
               </div>
             </div>
           </div>
@@ -100,31 +127,49 @@ export default function Finance() {
           {activeOrders.length > 0 && (
             <div>
               <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>По заказам</p>
-              {activeOrders.map(order => (
-                <div key={order.id} style={cardStyle}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '13px', color: '#8A7F6E' }}>
-                      {new Date(order.created_at).toLocaleDateString('ru-RU')}
-                    </span>
-                    <span style={{ fontSize: '12px', color: '#8A7F6E' }}>
-                      {statusLabel[order.status] ?? order.status}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <p style={{ fontSize: '15px', fontWeight: 600 }}>{calcOrderTotal(order).toFixed(2)} BYN</p>
-                      <p style={{ fontSize: '12px', color: '#8A7F6E' }}>Оплачено: {(order.amount_paid ?? 0).toFixed(2)} BYN</p>
-                    </div>
-                    {(order.amount_paid ?? 0) >= calcOrderTotal(order) && calcOrderTotal(order) > 0 ? (
-                      <span style={{ fontSize: '12px', color: '#5A7A5A', fontWeight: 600 }}>✅ Оплачен</span>
-                    ) : (
-                      <span style={{ fontSize: '12px', color: '#c0392b', fontWeight: 600 }}>
-                        Долг: {(calcOrderTotal(order) - (order.amount_paid ?? 0)).toFixed(2)} BYN
+              {activeOrders.map(order => {
+                const goods = calcGoods(order)
+                const delivery = calcDelivery(order)
+                const total = goods + (delivery ?? 0)
+                const paid = order.amount_paid ?? 0
+                return (
+                  <div key={order.id} style={cardStyle}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '13px', color: '#8A7F6E' }}>
+                        {new Date(order.created_at).toLocaleDateString('ru-RU')}
                       </span>
-                    )}
+                      <span style={{ fontSize: '12px', color: '#8A7F6E' }}>
+                        {statusLabel[order.status] ?? order.status}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: '12px', color: '#8A7F6E' }}>Товары</p>
+                        <p style={{ fontSize: '14px', fontWeight: 600 }}>{goods.toFixed(2)} BYN</p>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: '12px', color: '#8A7F6E' }}>Доставка</p>
+                        <p style={{ fontSize: '14px', fontWeight: 600 }}>
+                          {delivery !== null ? `${delivery.toFixed(2)} BYN` : 'по прибытию'}
+                        </p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <p style={{ fontSize: '15px', fontWeight: 600 }}>{total.toFixed(2)} BYN</p>
+                        <p style={{ fontSize: '12px', color: '#8A7F6E' }}>Оплачено: {paid.toFixed(2)} BYN</p>
+                      </div>
+                      {paid >= total && total > 0 ? (
+                        <span style={{ fontSize: '12px', color: '#5A7A5A', fontWeight: 600 }}>✅ Оплачен</span>
+                      ) : (
+                        <span style={{ fontSize: '12px', color: '#c0392b', fontWeight: 600 }}>
+                          Долг: {(total - paid).toFixed(2)} BYN
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </>
@@ -148,7 +193,7 @@ const labelStyle: React.CSSProperties = {
 }
 
 const valueStyle: React.CSSProperties = {
-  fontSize: '22px',
+  fontSize: '20px',
   fontWeight: 700,
   color: '#1A1A1A',
 }
