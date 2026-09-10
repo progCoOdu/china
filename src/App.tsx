@@ -9,6 +9,8 @@ import OrderDetail from './pages/OrderDetail'
 import Finance from './pages/Finance'
 import Admin from './pages/Admin'
 import AdminSettings from './pages/AdminSettings'
+import AdminClients from './pages/AdminClients'
+import AdminClientDetail from './pages/AdminClientDetail'
 
 const ADMIN_TG_ID = '7675680438'
 
@@ -24,6 +26,8 @@ function App() {
             <>
               <Route path="/" element={<Admin />} />
               <Route path="/admin/done" element={<Admin />} />
+              <Route path="/admin/clients" element={<AdminClients />} />
+              <Route path="/admin/clients/:userId" element={<AdminClientDetail />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
             </>
           ) : (
@@ -42,4 +46,4 @@ function App() {
   )
 }
 
-export default App
+export default Appг
