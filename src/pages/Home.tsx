@@ -98,7 +98,7 @@ export default function Home() {
         </div>
       )}
 
-      {!loading && orders.length === 0 && (
+      {!loading && (
         <div style={{ ...cardStyle, marginBottom: '16px' }}>
           <p style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>Как это работает?</p>
           {[
