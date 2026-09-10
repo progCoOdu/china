@@ -1,6 +1,7 @@
 export interface OrderItem {
   id: string
   order_id: string
+  name: string | null
   link: string
   product_type: string | null
   color: string | null
