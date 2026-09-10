@@ -46,4 +46,4 @@ function App() {
   )
 }
 
-export default Appг
+export default App
