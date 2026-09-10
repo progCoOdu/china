@@ -46,12 +46,6 @@ export default function Finance() {
     return items.reduce((sum, item) => sum + (item.weight_kg ?? 0) * deliveryRate, 0)
   }
 
-  const calcTotal = (order: Order) => {
-    if (order.total_byn) return order.total_byn
-    const goods = calcGoods(order)
-    const delivery = calcDelivery(order)
-    return goods + (delivery ?? 0)
-  }
 
   const activeOrders = orders.filter(o => o.status !== 'declined')
   const totalGoods = activeOrders.reduce((sum, o) => sum + calcGoods(o), 0)
