@@ -17,6 +17,8 @@ export interface Order {
   tg_username: string | null
   tg_first_name: string | null
   status: string
+  amount_paid: number
+  total_byn: number | null
   created_at: string
   order_items?: OrderItem[]
 }
