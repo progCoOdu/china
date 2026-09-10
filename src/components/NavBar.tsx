@@ -26,6 +26,7 @@ export default function NavBar() {
     { path: '/orders', label: 'Заказы', icon: '📋' },
     { path: '/order', label: 'Заказать', icon: '📦' },
     { path: '/finance', label: 'Финансы', icon: '💰' },
+    { path: '/settings', label: 'Профиль', icon: '👤' },
   ]
 
   return (
@@ -40,8 +41,8 @@ export default function NavBar() {
             borderTop: location.pathname === tab.path ? '2px solid #1A1A1A' : '2px solid transparent',
           }}
         >
-          <span style={{ fontSize: '20px' }}>{tab.icon}</span>
-          <span style={{ fontSize: '10px', fontWeight: location.pathname === tab.path ? 600 : 400 }}>
+          <span style={{ fontSize: '18px' }}>{tab.icon}</span>
+          <span style={{ fontSize: '9px', fontWeight: location.pathname === tab.path ? 600 : 400 }}>
             {tab.label}
           </span>
         </button>
