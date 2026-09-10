@@ -8,6 +8,7 @@ type DraftItem = Omit<OrderItem, 'id' | 'order_id' | 'created_at'>
 
 export default function OrderForm() {
   const [items, setItems] = useState<DraftItem[]>([])
+  const [name, setName] = useState('')
   const [link, setLink] = useState('')
   const [productType, setProductType] = useState('')
   const [color, setColor] = useState('')
@@ -19,11 +20,12 @@ export default function OrderForm() {
   const navigate = useNavigate()
 
   const addItem = () => {
-    if (!link || !priceCny || !weightKg) {
-      setError('Заполни ссылку, сумму и вес')
+    if (!name || !link || !priceCny || !weightKg) {
+      setError('Заполни наименование, ссылку, сумму и вес')
       return
     }
     setItems([...items, {
+      name,
       link,
       product_type: productType || '—',
       color: color || '—',
@@ -31,6 +33,7 @@ export default function OrderForm() {
       price_cny: parseFloat(priceCny),
       weight_kg: parseFloat(weightKg),
     }])
+    setName('')
     setLink('')
     setProductType('')
     setColor('')
@@ -94,9 +97,7 @@ export default function OrderForm() {
           {items.map((item, i) => (
             <div key={i} style={itemCardStyle}>
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: '13px', color: '#3A3A3A', wordBreak: 'break-all' }}>
-                  {item.link.length > 35 ? item.link.slice(0, 35) + '...' : item.link}
-                </p>
+                <p style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>{item.name}</p>
                 <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
                   {item.price_cny} ¥ · {item.weight_kg} кг
                 </p>
@@ -109,6 +110,11 @@ export default function OrderForm() {
 
       <div style={{ background: '#EDE5D0', borderRadius: '16px', padding: '16px', border: '1px solid #D4C9B0', marginBottom: '16px' }}>
         <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '14px' }}>+ Добавить товар</p>
+
+        <div style={{ marginBottom: '12px' }}>
+          <label style={labelStyle}>Наименование *</label>
+          <input type="text" placeholder="Кроссовки Nike Air Max" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+        </div>
 
         <div style={{ marginBottom: '12px' }}>
           <label style={labelStyle}>Ссылка *</label>
