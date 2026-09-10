@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../utils/supabase'
-import { getTelegramUser } from '../utils/telegram'
 import { Order } from '../types'
-
-const ADMIN_TG_ID = '7675680438'
+import { useLocation } from 'react-router-dom'
 
 const statusLabel: Record<string, string> = {
   new: '🆕 Новый',
@@ -20,23 +18,24 @@ const statusLabel: Record<string, string> = {
 export default function Admin() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [allowed, setAllowed] = useState(false)
+  const location = useLocation()
+  const isDone = location.pathname === '/admin/done'
 
   useEffect(() => {
-    const user = getTelegramUser()
-    if (!user || String(user.id) !== ADMIN_TG_ID) {
-      setLoading(false)
-      return
-    }
-    setAllowed(true)
     fetchOrders()
-  }, [])
+  }, [isDone])
 
   const fetchOrders = async () => {
-    const { data } = await supabase
+    setLoading(true)
+    const query = supabase
       .from('orders')
       .select('*, order_items(*)')
       .order('created_at', { ascending: false })
+
+    const { data } = isDone
+      ? await query.not('status', 'in', '("new")')
+      : await query.eq('status', 'new')
+
     setOrders(data ?? [])
     setLoading(false)
   }
@@ -46,15 +45,20 @@ export default function Admin() {
     fetchOrders()
   }
 
-  if (loading) return <div style={{ padding: '24px', background: '#F5F0E8', minHeight: '100vh' }}>Загружаем...</div>
-  if (!allowed) return <div style={{ padding: '24px', background: '#F5F0E8', minHeight: '100vh' }}>⛔ Доступ запрещён</div>
-
-    return (
+  return (
     <div style={{ padding: '24px 20px', minHeight: '100vh', background: '#F5F0E8' }}>
       <p style={{ fontSize: '14px', color: '#8A7F6E', marginBottom: '4px' }}>co.odu</p>
-      <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '28px' }}>Админ панель</h1>
+      <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '28px' }}>
+        {isDone ? 'Разобранные' : 'Новые заявки'}
+      </h1>
 
-      {orders.length === 0 && <p style={{ color: '#8A7F6E' }}>Заявок пока нет</p>}
+      {loading && <p style={{ color: '#8A7F6E' }}>Загружаем...</p>}
+
+      {!loading && orders.length === 0 && (
+        <p style={{ color: '#8A7F6E' }}>
+          {isDone ? 'Разобранных заявок нет' : 'Новых заявок нет 🎉'}
+        </p>
+      )}
 
       {orders.map(order => (
         <div key={order.id} style={cardStyle}>
@@ -73,7 +77,10 @@ export default function Admin() {
 
           {order.order_items?.map(item => (
             <div key={item.id} style={itemStyle}>
-              <a href={item.link} target="_blank" rel="noreferrer" style={{ color: '#1A1A1A', fontSize: '13px', wordBreak: 'break-all' }}>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>
+                {item.name ?? '—'}
+              </p>
+              <a href={item.link} target="_blank" rel="noreferrer" style={{ color: '#8A7F6E', fontSize: '12px', wordBreak: 'break-all' }}>
                 {item.link.length > 35 ? item.link.slice(0, 35) + '...' : item.link}
               </a>
               <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
