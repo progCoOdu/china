@@ -98,6 +98,26 @@ export default function Home() {
         </div>
       )}
 
+      {!loading && orders.length === 0 && (
+        <div style={{ ...cardStyle, marginBottom: '16px' }}>
+          <p style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>Как это работает?</p>
+          {[
+            { icon: '🔍', title: 'Находишь товар', desc: 'Выбираешь товар на любом китайском сайте — Taobao, 1688, Poizon и других.' },
+            { icon: '📋', title: 'Оформляешь заявку', desc: 'Вставляешь ссылку, указываешь цвет, размер и стоимость в юанях.' },
+            { icon: '📦', title: 'Мы заказываем', desc: 'Выкупаем товар, доставляем на склад в Китае и везём в Беларусь.' },
+            { icon: '🎉', title: 'Забираешь', desc: 'Получаешь уведомление когда заказ готов к выдаче.' },
+          ].map((step, i) => (
+            <div key={i} style={{ display: 'flex', gap: '14px', marginBottom: i < 3 ? '16px' : 0, paddingBottom: i < 3 ? '16px' : 0, borderBottom: i < 3 ? '1px solid #D4C9B0' : 'none' }}>
+              <span style={{ fontSize: '24px', flexShrink: 0 }}>{step.icon}</span>
+              <div>
+                <p style={{ fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>{step.title}</p>
+                <p style={{ fontSize: '13px', color: '#8A7F6E' }}>{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <button onClick={() => navigate('/order')} style={buttonStyle}>
         + Новый заказ
       </button>
