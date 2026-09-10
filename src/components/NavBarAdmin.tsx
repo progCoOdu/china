@@ -1,8 +1,25 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 export default function NavBarAdmin() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    const handleFocus = () => setVisible(false)
+    const handleBlur = () => setTimeout(() => setVisible(true), 100)
+
+    window.addEventListener('focusin', handleFocus)
+    window.addEventListener('focusout', handleBlur)
+
+    return () => {
+      window.removeEventListener('focusin', handleFocus)
+      window.removeEventListener('focusout', handleBlur)
+    }
+  }, [])
+
+  if (!visible) return null
 
   const tabs = [
     { path: '/', label: 'Новые', icon: '🆕' },
@@ -42,6 +59,7 @@ const navStyle: React.CSSProperties = {
   borderTop: '1px solid #D4C9B0',
   display: 'flex',
   padding: '8px 0 28px',
+  zIndex: 100,
 }
 
 const tabStyle: React.CSSProperties = {
