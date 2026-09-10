@@ -5,6 +5,7 @@ import NavBarAdmin from './components/NavBarAdmin'
 import Home from './pages/Home'
 import OrderForm from './pages/OrderForm'
 import MyOrders from './pages/MyOrders'
+import OrderDetail from './pages/OrderDetail'
 import Finance from './pages/Finance'
 import Admin from './pages/Admin'
 import AdminSettings from './pages/AdminSettings'
@@ -30,6 +31,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/order" element={<OrderForm />} />
               <Route path="/orders" element={<MyOrders />} />
+              <Route path="/orders/:id" element={<OrderDetail />} />
               <Route path="/finance" element={<Finance />} />
             </>
           )}
