@@ -4,17 +4,6 @@ import { getTelegramUser } from '../utils/telegram'
 import { Order } from '../types'
 import { useNavigate } from 'react-router-dom'
 
-const statusList = [
-  { key: 'new', label: 'Новый' },
-  { key: 'accepted', label: 'Принят' },
-  { key: 'ordered', label: 'Заказан' },
-  { key: 'warehouse', label: 'Склад' },
-  { key: 'transit_msk', label: 'MSK' },
-  { key: 'transit_msq', label: 'MSQ' },
-  { key: 'arrived', label: 'Прибыл' },
-  { key: 'ready', label: 'Готов' },
-]
-
 export default function Home() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,6 +50,17 @@ export default function Home() {
   const totalPaid = orders.reduce((sum, o) => sum + (o.amount_paid ?? 0), 0)
   const debt = totalByn - totalPaid
 
+  const statusLabel: Record<string, string> = {
+    new: '🆕 Новый',
+    accepted: '✅ Принят',
+    ordered: '🛒 Заказан',
+    warehouse: '📦 На складе',
+    transit_msk: '🚚 В пути MSK',
+    transit_msq: '🚚 В пути MSQ',
+    arrived: '🏁 Прибыл',
+    ready: '🎉 Готов к выдаче',
+  }
+
   return (
     <div style={{ padding: '24px 20px', minHeight: '100vh', background: '#F5F0E8' }}>
       <p style={{ fontSize: '14px', color: '#8A7F6E', marginBottom: '4px' }}>co.odu</p>
@@ -84,36 +84,17 @@ export default function Home() {
 
       {!loading && orders.length > 0 && (
         <div style={{ marginBottom: '16px' }}>
-          <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>Мои заказы</p>
-          {orders.map(order => {
-            const currentIndex = statusList.findIndex(s => s.key === order.status)
-            return (
-              <div key={order.id} style={{ ...cardStyle, cursor: 'pointer', marginBottom: '12px' }} onClick={() => navigate(`/orders/${order.id}`)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '13px', color: '#3A3A3A', fontWeight: 600 }}>
-                    {order.order_items?.length ?? 0} товар(а)
-                  </span>
-                  <span style={{ fontSize: '12px', color: '#8A7F6E' }}>
-                    {new Date(order.created_at).toLocaleDateString('ru-RU')}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', gap: '3px', marginBottom: '8px' }}>
-                  {statusList.map((s, i) => (
-                    <div key={s.key} style={{
-                      flex: 1,
-                      height: '4px',
-                      borderRadius: '2px',
-                      background: i <= currentIndex ? '#1A1A1A' : '#D4C9B0',
-                    }} />
-                  ))}
-                </div>
-                <p style={{ fontSize: '12px', color: '#8A7F6E' }}>
-                  {statusList[currentIndex]?.label ?? order.status}
-                  {currentIndex < statusList.length - 1 && ` → ${statusList[currentIndex + 1]?.label}`}
-                </p>
-              </div>
-            )
-          })}
+          <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>Статусы</p>
+          {orders.map(order => (
+            <div key={order.id} style={orderRowStyle} onClick={() => navigate(`/orders/${order.id}`)}>
+              <span style={{ fontSize: '13px', color: '#3A3A3A' }}>
+                {order.order_items?.length ?? 0} товар(а) · {new Date(order.created_at).toLocaleDateString('ru-RU')}
+              </span>
+              <span style={{ fontSize: '12px', color: '#8A7F6E' }}>
+                {statusLabel[order.status] ?? order.status}
+              </span>
+            </div>
+          ))}
         </div>
       )}
 
