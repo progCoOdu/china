@@ -35,3 +35,13 @@ export interface Setting {
   id: string
   value: number
 }
+
+export interface Profile {
+  tg_user_id: string
+  full_name: string
+  city: string
+  address: string
+  phone: string
+  tg_username: string | null
+  created_at: string
+}
