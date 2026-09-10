@@ -136,12 +136,6 @@ const buttonStyle: React.CSSProperties = {
   boxSizing: 'border-box',
 }
 
-Готово — скажи!
-
-+
-
-Теперь создай src/pages/ProfileSettings.tsx:
-
 tsx
 import { useEffect, useState } from 'react'
 import { supabase } from '../utils/supabase'
