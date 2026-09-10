@@ -14,14 +14,13 @@ export default function OrderForm() {
   const [color, setColor] = useState('')
   const [size, setSize] = useState('')
   const [priceCny, setPriceCny] = useState('')
-  const [weightKg, setWeightKg] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
   const addItem = () => {
-    if (!name || !link || !priceCny || !weightKg) {
-      setError('Заполни наименование, ссылку, сумму и вес')
+    if (!name || !link || !priceCny) {
+      setError('Заполни наименование, ссылку и сумму')
       return
     }
     setItems([...items, {
@@ -31,7 +30,7 @@ export default function OrderForm() {
       color: color || '—',
       size: size || '—',
       price_cny: parseFloat(priceCny),
-      weight_kg: parseFloat(weightKg),
+      weight_kg: null,
     }])
     setName('')
     setLink('')
@@ -39,7 +38,6 @@ export default function OrderForm() {
     setColor('')
     setSize('')
     setPriceCny('')
-    setWeightKg('')
     setError(null)
   }
 
@@ -99,7 +97,7 @@ export default function OrderForm() {
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>{item.name}</p>
                 <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
-                  {item.price_cny} ¥ · {item.weight_kg} кг
+                  {item.price_cny} ¥
                 </p>
               </div>
               <button onClick={() => removeItem(i)} style={removeButtonStyle}>✕</button>
@@ -136,14 +134,9 @@ export default function OrderForm() {
           <input type="text" placeholder="42, XL... или —" value={size} onChange={e => setSize(e.target.value)} style={inputStyle} />
         </div>
 
-        <div style={{ marginBottom: '12px' }}>
+        <div style={{ marginBottom: '16px' }}>
           <label style={labelStyle}>Сумма в юанях *</label>
           <input type="number" placeholder="0" value={priceCny} onChange={e => setPriceCny(e.target.value)} style={inputStyle} />
-        </div>
-
-        <div style={{ marginBottom: '16px' }}>
-          <label style={labelStyle}>Примерный вес (кг) *</label>
-          <input type="number" placeholder="0.5" value={weightKg} onChange={e => setWeightKg(e.target.value)} style={inputStyle} />
         </div>
 
         {error && <p style={{ color: '#c0392b', marginBottom: '12px', fontSize: '14px' }}>{error}</p>}
