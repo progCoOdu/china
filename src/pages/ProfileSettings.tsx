@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../utils/supabase'
 import { getTelegramUser } from '../utils/telegram'
-import { Profile } from '../types'
 
 export default function ProfileSettings() {
   const [fullName, setFullName] = useState('')
