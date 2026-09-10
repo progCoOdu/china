@@ -39,7 +39,7 @@ export default function AdminClientDetail() {
 
     if (ordersRes.data) {
       setOrders(ordersRes.data)
-      setClientName(ordersRes.data[0]?.tg_first_name ?? 'Аноним')
+      setClientName(ordersRes.data[0]?.tg_first_name ?? 'аноним')
     }
 
     if (settingsRes.data) {
@@ -123,11 +123,27 @@ export default function AdminClientDetail() {
           </p>
 
           {order.order_items?.map(item => (
-            <div key={item.id} style={itemStyle}>
-              <p style={{ fontSize: '13px', fontWeight: 600 }}>{item.name ?? '—'}</p>
-              <p style={{ fontSize: '12px', color: '#8A7F6E' }}>{item.price_cny} ¥ · {item.weight_kg} кг</p>
-            </div>
-          ))}
+  <div key={item.id} style={itemStyle}>
+    <p style={{ fontSize: '13px', fontWeight: 600 }}>{item.name ?? '—'}</p>
+    <p style={{ fontSize: '12px', color: '#8A7F6E' }}>{item.price_cny} ¥ · {item.weight_kg} кг</p>
+    {order.status === 'arrived' && (
+      <div style={{ marginTop: '8px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <label style={{ fontSize: '12px', color: '#8A7F6E' }}>Фактический вес (кг):</label>
+        <input
+          type="number"
+          placeholder={String(item.weight_kg ?? 0)}
+          style={{ ...inputStyle, width: '80px', padding: '4px 8px' }}
+          onBlur={async e => {
+            if (e.target.value) {
+              await supabase.from('order_items').update({ weight_kg: parseFloat(e.target.value) }).eq('id', item.id)
+              fetchData()
+            }
+          }}
+        />
+      </div>
+    )}
+  </div>
+))}
 
           <div style={{ marginTop: '12px', padding: '12px', background: '#F5F0E8', borderRadius: '10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
