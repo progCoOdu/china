@@ -53,7 +53,11 @@ export default function MyOrders() {
       )}
 
       {orders.map(order => (
-        <div key={order.id} style={cardStyle}>
+        <div
+          key={order.id}
+          style={{ ...cardStyle, cursor: 'pointer' }}
+          onClick={() => navigate(`/orders/${order.id}`)}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
             <span style={{ fontSize: '13px', color: '#8A7F6E' }}>
               {new Date(order.created_at).toLocaleDateString('ru-RU')}
@@ -62,19 +66,22 @@ export default function MyOrders() {
               {statusLabel[order.status] ?? order.status}
             </span>
           </div>
-          <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '8px' }}>
+          <p style={{ fontSize: '13px', color: '#3A3A3A', marginBottom: '4px' }}>
             Товаров: {order.order_items?.length ?? 0}
           </p>
-          {order.order_items?.map(item => (
-            <div key={item.id} style={itemStyle}>
-              <a href={item.link} target="_blank" rel="noreferrer" style={{ color: '#1A1A1A', fontSize: '13px', wordBreak: 'break-all' }}>
-                {item.link.length > 35 ? item.link.slice(0, 35) + '...' : item.link}
-              </a>
-              <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
-                {item.price_cny} ¥ · {item.weight_kg} кг
-              </p>
-            </div>
+          {order.order_items?.slice(0, 2).map(item => (
+            <p key={item.id} style={{ fontSize: '12px', color: '#8A7F6E' }}>
+              — {item.name ?? item.link.slice(0, 30)}
+            </p>
           ))}
+          {(order.order_items?.length ?? 0) > 2 && (
+            <p style={{ fontSize: '12px', color: '#8A7F6E' }}>
+              и ещё {(order.order_items?.length ?? 0) - 2} товар(а)
+            </p>
+          )}
+          <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '8px', textAlign: 'right' }}>
+            Открыть →
+          </p>
         </div>
       ))}
     </div>
@@ -96,13 +103,5 @@ const cardStyle: React.CSSProperties = {
   borderRadius: '14px',
   background: '#EDE5D0',
   marginBottom: '12px',
-  border: '1px solid #D4C9B0',
-}
-
-const itemStyle: React.CSSProperties = {
-  padding: '10px',
-  borderRadius: '10px',
-  background: '#F5F0E8',
-  marginTop: '8px',
   border: '1px solid #D4C9B0',
 }
