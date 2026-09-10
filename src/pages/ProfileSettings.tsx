@@ -4,7 +4,6 @@ import { getTelegramUser } from '../utils/telegram'
 import { Profile } from '../types'
 
 export default function ProfileSettings() {
-  const [profile, setProfile] = useState<Profile | null>(null)
   const [fullName, setFullName] = useState('')
   const [city, setCity] = useState('')
   const [address, setAddress] = useState('')
@@ -20,7 +19,6 @@ export default function ProfileSettings() {
       const tg_user_id = user ? String(user.id) : 'anonymous'
       const { data } = await supabase.from('profiles').select('*').eq('tg_user_id', tg_user_id).single()
       if (data) {
-        setProfile(data)
         setFullName(data.full_name ?? '')
         setCity(data.city ?? '')
         setAddress(data.address ?? '')
