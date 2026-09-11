@@ -39,7 +39,7 @@ export default function AdminClientDetail() {
 
     if (ordersRes.data) {
       setOrders(ordersRes.data)
-      setClientName(ordersRes.data[0]?.tg_first_name ?? 'аноним')
+      setClientName(ordersRes.data[0]?.tg_first_name ?? 'Аноним')
     }
 
     if (settingsRes.data) {
@@ -63,6 +63,26 @@ export default function AdminClientDetail() {
   const handleSavePaid = async (orderId: string) => {
     await supabase.from('orders').update({ amount_paid: parseFloat(amountPaid) }).eq('id', orderId)
     setEditingId(null)
+    fetchData()
+  }
+
+  const updateStatus = async (orderId: string, status: string, tg_user_id: string, created_at: string) => {
+    await supabase.from('orders').update({ status }).eq('id', orderId)
+
+    try {
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tg_user_id,
+          status,
+          order_date: new Date(created_at).toLocaleDateString('ru-RU'),
+        }),
+      })
+    } catch (e) {
+      console.error('Notification error:', e)
+    }
+
     fetchData()
   }
 
@@ -123,29 +143,53 @@ export default function AdminClientDetail() {
           </p>
 
           {order.order_items?.map(item => (
-  <div key={item.id} style={itemStyle}>
-    <p style={{ fontSize: '13px', fontWeight: 600 }}>{item.name ?? '—'}</p>
-    <p style={{ fontSize: '12px', color: '#8A7F6E' }}>{item.price_cny} ¥ · {item.weight_kg} кг</p>
-    {order.status === 'arrived' && (
-      <div style={{ marginTop: '8px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-        <label style={{ fontSize: '12px', color: '#8A7F6E' }}>Фактический вес (кг):</label>
-        <input
-          type="number"
-          placeholder={String(item.weight_kg ?? 0)}
-          style={{ ...inputStyle, width: '80px', padding: '4px 8px' }}
-          onBlur={async e => {
-            if (e.target.value) {
-              await supabase.from('order_items').update({ weight_kg: parseFloat(e.target.value) }).eq('id', item.id)
-              fetchData()
-            }
-          }}
-        />
-      </div>
-    )}
-  </div>
-))}
+            <div key={item.id} style={itemStyle}>
+              <p style={{ fontSize: '13px', fontWeight: 600 }}>{item.name ?? '—'}</p>
+              <p style={{ fontSize: '12px', color: '#8A7F6E' }}>{item.price_cny} ¥ · {item.weight_kg ?? '—'} кг</p>
+              {order.status === 'arrived' && (
+                <div style={{ marginTop: '8px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <label style={{ fontSize: '12px', color: '#8A7F6E' }}>Фактический вес (кг):</label>
+                  <input
+                    type="number"
+                    placeholder={String(item.weight_kg ?? 0)}
+                    style={{ ...inputStyle, width: '80px', padding: '4px 8px' }}
+                    onBlur={async e => {
+                      if (e.target.value) {
+                        await supabase.from('order_items').update({ weight_kg: parseFloat(e.target.value) }).eq('id', item.id)
+                        fetchData()
+                      }
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
 
-          <div style={{ marginTop: '12px', padding: '12px', background: '#F5F0E8', borderRadius: '10px' }}>
+          <div style={{ marginTop: '12px' }}>
+            <p style={{ fontSize: '12px', color: '#8A7F6E', marginBottom: '8px' }}>Статус:</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
+              {Object.entries(statusLabel).map(([s, label]) => (
+                <button
+                  key={s}
+                  onClick={() => updateStatus(order.id, s, order.tg_user_id, order.created_at)}
+                  style={{
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    background: order.status === s ? '#1A1A1A' : '#F5F0E8',
+                    color: order.status === s ? '#F5F0E8' : '#1A1A1A',
+                    fontWeight: order.status === s ? 600 : 400,
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ padding: '12px', background: '#F5F0E8', borderRadius: '10px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
               <p style={{ fontSize: '13px', fontWeight: 600 }}>Сумма: {calcOrderTotal(order).toFixed(2)} BYN</p>
               <p style={{ fontSize: '13px', color: '#8A7F6E' }}>Оплачено: {(order.amount_paid ?? 0).toFixed(2)} BYN</p>
