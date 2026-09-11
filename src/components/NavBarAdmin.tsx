@@ -8,6 +8,7 @@ export default function NavBarAdmin() {
     { path: '/', label: 'Новые', icon: '🆕' },
     { path: '/admin/done', label: 'Разобранные', icon: '✅' },
     { path: '/admin/clients', label: 'Клиенты', icon: '👥' },
+    { path: '/admin/broadcast', label: 'Рассылка', icon: '📢' },
     { path: '/admin/settings', label: 'Настройки', icon: '⚙️' },
   ]
 
@@ -23,8 +24,8 @@ export default function NavBarAdmin() {
             borderTop: location.pathname === tab.path ? '2px solid #1A1A1A' : '2px solid transparent',
           }}
         >
-          <span style={{ fontSize: '20px' }}>{tab.icon}</span>
-          <span style={{ fontSize: '10px', fontWeight: location.pathname === tab.path ? 600 : 400 }}>
+          <span style={{ fontSize: '18px' }}>{tab.icon}</span>
+          <span style={{ fontSize: '9px', fontWeight: location.pathname === tab.path ? 600 : 400 }}>
             {tab.label}
           </span>
         </button>
