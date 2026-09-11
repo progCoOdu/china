@@ -17,24 +17,30 @@ import AdminBroadcast from './pages/AdminBroadcast'
 import Register from './pages/Register'
 import ProfileSettings from './pages/ProfileSettings'
 
-const ADMIN_TG_ID = '7675680438'
-
 function App() {
   const user = getTelegramUser()
-  const isAdmin = user ? String(user.id) === ADMIN_TG_ID : false
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [registered, setRegistered] = useState<boolean | null>(null)
 
   useEffect(() => {
-    if (isAdmin) {
-      setRegistered(true)
-      return
-    }
-    const checkProfile = async () => {
+    const init = async () => {
       const tg_user_id = user ? String(user.id) : 'anonymous'
-      const { data } = await supabase.from('profiles').select('tg_user_id').eq('tg_user_id', tg_user_id).single()
-      setRegistered(!!data)
+
+      const [adminRes, profileRes] = await Promise.all([
+        supabase.from('admins').select('tg_user_id').eq('tg_user_id', tg_user_id).single(),
+        supabase.from('profiles').select('tg_user_id').eq('tg_user_id', tg_user_id).single(),
+      ])
+
+      const admin = !!adminRes.data
+      setIsAdmin(admin)
+
+      if (admin) {
+        setRegistered(true)
+      } else {
+        setRegistered(!!profileRes.data)
+      }
     }
-    checkProfile()
+    init()
   }, [])
 
   if (registered === null) return (
