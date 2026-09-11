@@ -13,6 +13,7 @@ import Admin from './pages/Admin'
 import AdminSettings from './pages/AdminSettings'
 import AdminClients from './pages/AdminClients'
 import AdminClientDetail from './pages/AdminClientDetail'
+import AdminBroadcast from './pages/AdminBroadcast'
 import Register from './pages/Register'
 import ProfileSettings from './pages/ProfileSettings'
 
@@ -54,6 +55,7 @@ function App() {
               <Route path="/admin/done" element={<Admin />} />
               <Route path="/admin/clients" element={<AdminClients />} />
               <Route path="/admin/clients/:userId" element={<AdminClientDetail />} />
+              <Route path="/admin/broadcast" element={<AdminBroadcast />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
             </>
           ) : (
