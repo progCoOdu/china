@@ -26,15 +26,18 @@ export default function AdminClientDetail() {
   const [deliveryRate, setDeliveryRate] = useState<number>(25)
   const [clientName, setClientName] = useState<string>('')
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [phone, setPhone] = useState<string | null>(null)
+  const [address, setAddress] = useState<string | null>(null)
 
   useEffect(() => {
     fetchData()
   }, [userId])
 
   const fetchData = async () => {
-    const [ordersRes, settingsRes] = await Promise.all([
+    const [ordersRes, settingsRes, profileRes] = await Promise.all([
       supabase.from('orders').select('*, order_items(*)').eq('tg_user_id', userId).order('created_at', { ascending: false }),
       supabase.from('settings').select('*'),
+      supabase.from('profiles').select('*').eq('tg_user_id', userId).single(),
     ])
 
     if (ordersRes.data) {
@@ -47,6 +50,12 @@ export default function AdminClientDetail() {
       const delivery = settingsRes.data.find(s => s.id === 'delivery_rate')
       setExchangeRate(rate?.value ?? 0.5)
       setDeliveryRate(delivery?.value ?? 25)
+    }
+
+    if (profileRes.data) {
+      setPhone(profileRes.data.phone ?? null)
+      setAddress(profileRes.data.address ?? null)
+      setClientName(profileRes.data.full_name ?? clientName)
     }
 
     setLoading(false)
@@ -68,7 +77,6 @@ export default function AdminClientDetail() {
 
   const updateStatus = async (orderId: string, status: string, tg_user_id: string, created_at: string) => {
     await supabase.from('orders').update({ status }).eq('id', orderId)
-
     try {
       await fetch('/api/notify', {
         method: 'POST',
@@ -82,7 +90,6 @@ export default function AdminClientDetail() {
     } catch (e) {
       console.error('Notification error:', e)
     }
-
     fetchData()
   }
 
@@ -112,6 +119,25 @@ export default function AdminClientDetail() {
           <p style={{ fontSize: '14px', color: '#8A7F6E' }}>Клиент</p>
           <h1 style={{ fontSize: '20px', fontWeight: 700 }}>{clientName}</h1>
         </div>
+      </div>
+
+      <div style={{ ...cardStyle, marginBottom: '12px' }}>
+        <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '12px', fontWeight: 600 }}>Контакты</p>
+        {phone && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontSize: '13px', color: '#8A7F6E' }}>Телефон</span>
+            <a href={`tel:${phone}`} style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A', textDecoration: 'none' }}>{phone}</a>
+          </div>
+        )}
+        {address && (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '13px', color: '#8A7F6E' }}>Адрес</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A', textAlign: 'right', maxWidth: '60%' }}>{address}</span>
+          </div>
+        )}
+        {!phone && !address && (
+          <p style={{ fontSize: '13px', color: '#8A7F6E' }}>Нет данных</p>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
