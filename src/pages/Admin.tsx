@@ -40,8 +40,23 @@ export default function Admin() {
     setLoading(false)
   }
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: string, tg_user_id: string, created_at: string) => {
     await supabase.from('orders').update({ status }).eq('id', id)
+
+    try {
+      await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tg_user_id,
+          status,
+          order_date: new Date(created_at).toLocaleDateString('ru-RU'),
+        }),
+      })
+    } catch (e) {
+      console.error('Notification error:', e)
+    }
+
     fetchOrders()
   }
 
@@ -87,7 +102,7 @@ export default function Admin() {
                 {item.product_type} · {item.color} · {item.size}
               </p>
               <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '2px' }}>
-                {item.price_cny} ¥ · {item.weight_kg} кг
+                {item.price_cny} ¥ · {item.weight_kg ?? '—'} кг
               </p>
             </div>
           ))}
@@ -98,7 +113,7 @@ export default function Admin() {
               {Object.entries(statusLabel).map(([s, label]) => (
                 <button
                   key={s}
-                  onClick={() => updateStatus(order.id, s)}
+                  onClick={() => updateStatus(order.id, s, order.tg_user_id, order.created_at)}
                   style={{
                     padding: '6px 10px',
                     borderRadius: '8px',
