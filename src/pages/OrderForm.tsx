@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../utils/supabase'
 import { getTelegramUser } from '../utils/telegram'
 import { OrderItem } from '../types'
@@ -16,15 +16,76 @@ export default function OrderForm() {
   const [priceCny, setPriceCny] = useState('')
   const [quantity, setQuantity] = useState('1')
   const [loading, setLoading] = useState(false)
+  const [cartLoading, setCartLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
+  const user = getTelegramUser()
+  const tg_user_id = user ? String(user.id) : 'anonymous'
 
-  const addItem = () => {
+  useEffect(() => {
+    loadCart()
+  }, [])
+
+  const loadCart = async () => {
+    const { data } = await supabase
+      .from('cart_items')
+      .select('*')
+      .eq('tg_user_id', tg_user_id)
+      .order('created_at', { ascending: true })
+
+    if (data && data.length > 0) {
+      setItems(data.map(item => ({
+        name: item.name,
+        link: item.link,
+        product_type: item.product_type,
+        color: item.color,
+        size: item.size,
+        price_cny: item.price_cny,
+        weight_kg: null,
+        quantity: item.quantity,
+      })))
+    }
+    setCartLoading(false)
+  }
+
+  const saveCartItem = async (item: DraftItem) => {
+    await supabase.from('cart_items').insert({
+      tg_user_id,
+      name: item.name,
+      link: item.link,
+      product_type: item.product_type,
+      color: item.color,
+      size: item.size,
+      price_cny: item.price_cny,
+      quantity: item.quantity,
+    })
+  }
+
+  const removeCartItem = async (index: number) => {
+    const { data } = await supabase
+      .from('cart_items')
+      .select('id')
+      .eq('tg_user_id', tg_user_id)
+      .order('created_at', { ascending: true })
+
+    if (data && data[index]) {
+      await supabase.from('cart_items').delete().eq('id', data[index].id)
+    }
+
+    setItems(items.filter((_, i) => i !== index))
+  }
+
+  const clearCart = async () => {
+    await supabase.from('cart_items').delete().eq('tg_user_id', tg_user_id)
+  }
+
+  const addItem = async () => {
     if (!name || !link || !priceCny) {
       setError('Заполни наименование, ссылку и сумму')
       return
     }
-    setItems([...items, {
+
+    const newItem: DraftItem = {
       name,
       link,
       product_type: productType || '—',
@@ -33,7 +94,10 @@ export default function OrderForm() {
       price_cny: parseFloat(priceCny),
       weight_kg: null,
       quantity: parseInt(quantity) || 1,
-    }])
+    }
+
+    await saveCartItem(newItem)
+    setItems([...items, newItem])
     setName('')
     setLink('')
     setProductType('')
@@ -44,24 +108,19 @@ export default function OrderForm() {
     setError(null)
   }
 
-  const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index))
-  }
-
   const handleSubmit = async () => {
     if (items.length === 0) {
       setError('Добавь хотя бы один товар')
       return
     }
 
-    const user = getTelegramUser()
     setLoading(true)
     setError(null)
 
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
-        tg_user_id: user ? String(user.id) : 'anonymous',
+        tg_user_id,
         tg_username: user?.username ?? null,
         tg_first_name: user?.first_name ?? null,
       })
@@ -78,14 +137,22 @@ export default function OrderForm() {
       items.map(item => ({ ...item, order_id: order.id }))
     )
 
-    setLoading(false)
-
     if (itemsError) {
       setError('Ошибка при добавлении товаров')
-    } else {
-      navigate('/orders')
+      setLoading(false)
+      return
     }
+
+    await clearCart()
+    setLoading(false)
+    navigate('/orders')
   }
+
+  if (cartLoading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#F5F0E8' }}>
+      <p style={{ color: '#8A7F6E' }}>Загружаем корзину...</p>
+    </div>
+  )
 
   return (
     <div style={{ padding: '24px 20px', minHeight: '100vh', background: '#F5F0E8' }}>
@@ -103,7 +170,7 @@ export default function OrderForm() {
                   {item.price_cny} ¥ · {item.quantity} шт.
                 </p>
               </div>
-              <button onClick={() => removeItem(i)} style={removeButtonStyle}>✕</button>
+              <button onClick={() => removeCartItem(i)} style={removeButtonStyle}>✕</button>
             </div>
           ))}
         </div>
