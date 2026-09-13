@@ -11,7 +11,7 @@ const statusList = [
   { key: 'transit_msk', label: 'В пути MSK' },
   { key: 'transit_msq', label: 'В пути MSQ' },
   { key: 'arrived', label: 'Прибыл' },
-  { key: 'ready', label: 'Готов к выдаче' },
+  { key: 'ready', label: 'Готов' },
 ]
 
 export default function OrderDetail() {
@@ -70,14 +70,12 @@ export default function OrderDetail() {
           <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '14px' }}>Прогресс заказа</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '12px' }}>
             {statusList.map((s, i) => (
-              <div key={s.key} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <div style={{
-                  width: '100%',
-                  height: '4px',
-                  borderRadius: '2px',
-                  background: i <= currentIndex ? '#1A1A1A' : '#D4C9B0',
-                }} />
-              </div>
+              <div key={s.key} style={{
+                flex: 1,
+                height: '4px',
+                borderRadius: '2px',
+                background: i <= currentIndex ? '#1A1A1A' : '#D4C9B0',
+              }} />
             ))}
           </div>
           <p style={{ fontSize: '13px', fontWeight: 600 }}>
@@ -113,24 +111,33 @@ export default function OrderDetail() {
               )}
             </div>
             <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '6px' }}>
-              {item.price_cny} ¥ · {item.weight_kg} кг
+              {item.price_cny} ¥ · {item.quantity} шт.
             </p>
           </div>
         ))}
       </div>
 
       {!isDeclined && order.status === 'new' && (
-        <button
-          onClick={handleCancel}
-          disabled={cancelling}
-          style={{
-            ...cancelButtonStyle,
-            background: confirmCancel ? '#c0392b' : 'transparent',
-            color: confirmCancel ? '#fff' : '#c0392b',
-          }}
-        >
-          {confirmCancel ? '⚠️ Подтвердить отмену' : 'Отменить заказ'}
-        </button>
+        <>
+          <button
+            onClick={() => navigate(`/orders/${id}/edit`)}
+            style={editButtonStyle}
+          >
+            ✏️ Редактировать заказ
+          </button>
+
+          <button
+            onClick={handleCancel}
+            disabled={cancelling}
+            style={{
+              ...cancelButtonStyle,
+              background: confirmCancel ? '#c0392b' : 'transparent',
+              color: confirmCancel ? '#fff' : '#c0392b',
+            }}
+          >
+            {confirmCancel ? '⚠️ Подтвердить отмену' : 'Отменить заказ'}
+          </button>
+        </>
       )}
     </div>
   )
@@ -169,6 +176,20 @@ const tagStyle: React.CSSProperties = {
   borderRadius: '6px',
   background: '#D4C9B0',
   color: '#1A1A1A',
+}
+
+const editButtonStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '14px',
+  borderRadius: '12px',
+  border: '1px solid #1A1A1A',
+  background: 'transparent',
+  color: '#1A1A1A',
+  fontSize: '15px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  marginTop: '8px',
+  boxSizing: 'border-box',
 }
 
 const cancelButtonStyle: React.CSSProperties = {
