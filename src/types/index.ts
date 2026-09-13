@@ -8,6 +8,7 @@ export interface OrderItem {
   size: string | null
   price_cny: number | null
   weight_kg: number | null
+  quantity: number
   created_at: string
 }
 
