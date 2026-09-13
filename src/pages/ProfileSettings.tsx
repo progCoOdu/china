@@ -111,8 +111,11 @@ export default function ProfileSettings() {
           💬 Написать менеджеру
         </a>
         <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '16px' }}>
-          Разработано by co.odu
-        </p>
+  Разработано by co.odu
+</p>
+<p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
+  v2.1
+</p>
       </div>
     </div>
   )
