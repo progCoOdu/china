@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
-import { Order, OrderItem } from '../types'
-
-type DraftItem = Omit<OrderItem, 'id' | 'order_id' | 'created_at'>
+import { Order } from '../types'
 
 export default function OrderEdit() {
   const { id } = useParams()
@@ -97,7 +95,9 @@ export default function OrderEdit() {
       </div>
 
       <div style={{ marginBottom: '24px' }}>
-        <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>Товары в заказе ({order.order_items?.length ?? 0})</p>
+        <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>
+          Товары в заказе ({order.order_items?.length ?? 0})
+        </p>
         {order.order_items?.map(item => (
           <div key={item.id} style={itemCardStyle}>
             <div style={{ flex: 1 }}>
