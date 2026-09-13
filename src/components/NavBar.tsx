@@ -7,7 +7,7 @@ export default function NavBar() {
   const tabs = [
     { path: '/', label: 'Главная', icon: '🏠' },
     { path: '/orders', label: 'Заказы', icon: '📋' },
-    { path: '/order', label: 'Заказать', icon: '📦' },
+    { path: '/order', label: 'Корзина', icon: '🛒' },
     { path: '/finance', label: 'Финансы', icon: '💰' },
     { path: '/settings', label: 'Профиль', icon: '👤' },
   ]
