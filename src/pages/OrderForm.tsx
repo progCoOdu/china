@@ -14,6 +14,7 @@ export default function OrderForm() {
   const [color, setColor] = useState('')
   const [size, setSize] = useState('')
   const [priceCny, setPriceCny] = useState('')
+  const [quantity, setQuantity] = useState('1')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -31,6 +32,7 @@ export default function OrderForm() {
       size: size || '—',
       price_cny: parseFloat(priceCny),
       weight_kg: null,
+      quantity: parseInt(quantity) || 1,
     }])
     setName('')
     setLink('')
@@ -38,6 +40,7 @@ export default function OrderForm() {
     setColor('')
     setSize('')
     setPriceCny('')
+    setQuantity('1')
     setError(null)
   }
 
@@ -87,17 +90,17 @@ export default function OrderForm() {
   return (
     <div style={{ padding: '24px 20px', minHeight: '100vh', background: '#F5F0E8' }}>
       <p style={{ fontSize: '14px', color: '#8A7F6E', marginBottom: '4px' }}>co.odu</p>
-      <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '28px' }}>Новый заказ</h1>
+      <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '28px' }}>Корзина</h1>
 
       {items.length > 0 && (
         <div style={{ marginBottom: '24px' }}>
-          <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>Товары в заказе ({items.length})</p>
+          <p style={{ fontSize: '13px', color: '#8A7F6E', marginBottom: '10px' }}>Товары в корзине ({items.length})</p>
           {items.map((item, i) => (
             <div key={i} style={itemCardStyle}>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '13px', fontWeight: 600, color: '#1A1A1A' }}>{item.name}</p>
                 <p style={{ fontSize: '12px', color: '#8A7F6E', marginTop: '4px' }}>
-                  {item.price_cny} ¥
+                  {item.price_cny} ¥ · {item.quantity} шт.
                 </p>
               </div>
               <button onClick={() => removeItem(i)} style={removeButtonStyle}>✕</button>
@@ -134,15 +137,20 @@ export default function OrderForm() {
           <input type="text" placeholder="42, XL... или —" value={size} onChange={e => setSize(e.target.value)} style={inputStyle} />
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
+        <div style={{ marginBottom: '12px' }}>
           <label style={labelStyle}>Сумма в юанях *</label>
           <input type="number" placeholder="0" value={priceCny} onChange={e => setPriceCny(e.target.value)} style={inputStyle} />
+        </div>
+
+        <div style={{ marginBottom: '16px' }}>
+          <label style={labelStyle}>Количество</label>
+          <input type="number" placeholder="1" value={quantity} onChange={e => setQuantity(e.target.value)} style={inputStyle} min="1" />
         </div>
 
         {error && <p style={{ color: '#c0392b', marginBottom: '12px', fontSize: '14px' }}>{error}</p>}
 
         <button onClick={addItem} style={addButtonStyle}>
-          + Добавить в заказ
+          + Добавить в корзину
         </button>
       </div>
 
@@ -150,7 +158,7 @@ export default function OrderForm() {
         ...submitButtonStyle,
         opacity: items.length === 0 ? 0.5 : 1,
       }}>
-        {loading ? 'Отправляем...' : `Отправить заказ (${items.length} товар${items.length === 1 ? '' : items.length < 5 ? 'а' : 'ов'})`}
+        {loading ? 'Отправляем...' : `Оформить заказ (${items.length} товар${items.length === 1 ? '' : items.length < 5 ? 'а' : 'ов'})`}
       </button>
     </div>
   )
